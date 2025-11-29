@@ -30,7 +30,9 @@ fun GlassText(
     text: String,
     style: TextStyle,
     bgImage: ImageBitmap,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    blurRadius: Float = 40f,
+    tintColor: Color = Color.White
 ) {
     // Android 12 (API 31) 未満へのフォールバック（単なる半透明白文字）
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
@@ -67,7 +69,7 @@ fun GlassText(
                     .fillMaxSize()
                     .graphicsLayer {
                         renderEffect = RenderEffect
-                            .createBlurEffect(40f, 40f, Shader.TileMode.MIRROR)
+                            .createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR)
                             .asComposeRenderEffect()
 
                         // 【エラー修正箇所】
@@ -83,8 +85,8 @@ fun GlassText(
             style = style.copy(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.7f), // 左上: 明るい反射
-                        Color.White.copy(alpha = 0.1f)  // 右下: 透け感
+                        tintColor.copy(alpha = 0.7f), // 左上: 明るい反射
+                        tintColor.copy(alpha = 0.1f)  // 右下: 透け感
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(0f, Float.POSITIVE_INFINITY)

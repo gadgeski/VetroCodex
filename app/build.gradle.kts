@@ -18,6 +18,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // 【追加】 OpenWeatherMap API Key (本来は local.properties から読み込むべきですが、今回はプレースホルダー)
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"YOUR_API_KEY\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -48,6 +51,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfigを有効化
     }
 
     packaging {
@@ -66,6 +70,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
 
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -75,6 +80,12 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.work.runtime.ktx)
+
+    // 【追加】 天気機能用
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
