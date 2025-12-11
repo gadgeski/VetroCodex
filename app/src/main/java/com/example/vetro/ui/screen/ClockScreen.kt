@@ -1,3 +1,5 @@
+// app/src/main/java/com/example/vetro/ui/screen/ClockScreen.kt
+
 package com.example.vetro.ui.screen
 
 import android.Manifest
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -20,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,7 +63,9 @@ fun ClockScreen(
     }
 
     // 天気に応じたビジュアル変化
-    val (blurRadius, tintColor) = getWeatherVisuals(weatherState)
+    val (blurRadius, tintColor) = remember(weatherState) {
+        getWeatherVisuals(weatherState)
+    }
 
     val systemWallpaper: ImageBitmap? = rememberSystemWallpaper()
     val backgroundImage: ImageBitmap = systemWallpaper ?: ImageBitmap.imageResource(id = R.drawable.background_img)
@@ -78,15 +84,14 @@ fun ClockScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // コンテンツ全体をラップするBoxを作成し、ここでオフセットを適用
+        // コンテンツ全体をラップするBoxを作成し、ここで焼き付き防止オフセットを適用
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .offset { burnInOffset }
-        // 1分ごとに微妙に位置がずれる
         ) {
             if (isLandscape) {
-                // ■ 横画面
+                // ■ 横画面レイアウト
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
@@ -98,6 +103,7 @@ fun ClockScreen(
                         bgImage = backgroundImage,
                         blurRadius = blurRadius,
                         tintColor = tintColor,
+                        // weightを使うことで画面サイズに合わせて適切にスペースを分配
                         modifier = Modifier.weight(1f, fill = false)
                     )
                     Spacer(modifier = Modifier.width(32.dp))
@@ -111,25 +117,16 @@ fun ClockScreen(
                     }
                 }
             } else {
-                // ■ 縦画面
+                // ■ 縦画面レイアウト
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 180.dp),
+                        .padding(bottom = 80.dp), // 下部のスペース確保
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.offset(y = 250.dp)
-                    ) {
-                        Text(
-                            text = dateString,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.White.copy(alpha = 0.9f),
-                        )
-                        WeatherDisplay(weatherState = weatherState)
-                    }
+                    // SpacerとWeightを使って中央より少し上に配置するなど、柔軟に調整
+                    Spacer(modifier = Modifier.weight(1f))
 
                     GlassText(
                         text = timeString,
@@ -137,34 +134,50 @@ fun ClockScreen(
                         bgImage = backgroundImage,
                         blurRadius = blurRadius,
                         tintColor = tintColor,
-                        modifier = Modifier
-                            .offset(y = (-30).dp)
                     )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = dateString,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color.White.copy(alpha = 0.9f),
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        WeatherDisplay(weatherState = weatherState)
+                    }
+
+                    Spacer(modifier = Modifier.weight(1.2f)) // 下を少し広めにとる
                 }
             }
         }
     }
 }
 
-fun getWeatherVisuals(state: WeatherUiState): Pair<Float, Color> {
+// ロジック部分: 天気IDに基づいてブラー強度と色味を決定
+private fun getWeatherVisuals(state: WeatherUiState): Pair<Float, Color> {
     if (state !is WeatherUiState.Success) return 40f to Color.White
 
+    // OpenWeatherMap Condition Codes
     val id = state.weather.weather.firstOrNull()?.id ?: 800
     return when (id) {
-        in 200..232 -> 50f to Color(0xFFE1BEE7)
         // Thunderstorm (Purple-ish)
-        in 300..321 -> 60f to Color(0xFFB3E5FC)
+        in 200..232 -> 50f to Color(0xFFE1BEE7)
         // Drizzle (Light Blue)
-        in 500..531 -> 60f to Color(0xFF81D4FA)
+        in 300..321 -> 60f to Color(0xFFB3E5FC)
         // Rain (Blue)
-        in 600..622 -> 50f to Color(0xFFE0F7FA)
+        in 500..531 -> 60f to Color(0xFF81D4FA)
         // Snow (Cyan-ish White)
-        in 701..781 -> 30f to Color(0xFFCFD8DC)
+        in 600..622 -> 50f to Color(0xFFE0F7FA)
         // Atmosphere (Mist - Greyish)
-        800 -> 30f to Color(0xFFFFF9C4)
+        in 701..781 -> 30f to Color(0xFFCFD8DC)
         // Clear (Yellow-ish White)
-        in 801..804 -> 40f to Color.White
+        800 -> 30f to Color(0xFFFFF9C4)
         // Clouds
+        in 801..804 -> 40f to Color.White
         else -> 40f to Color.White
     }
 }
