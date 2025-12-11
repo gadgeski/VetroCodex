@@ -1,4 +1,5 @@
-// VetroDreamService.kt
+// app/src/main/java/com/example/vetro/service/VetroDreamService.kt
+
 package com.example.vetro.service
 
 import android.service.dreams.DreamService
@@ -20,11 +21,15 @@ import com.example.vetro.ui.theme.VetroTheme
 
 /**
  * Androidのスクリーンセーバー (Daydream) として動作するサービス
- * ServiceでComposeやViewModelを使うために必要なOwnerインターフェースを実装しています。
+ *
+ * ActivityではなくServiceコンテキストでJetpack ComposeとViewModelを使用するために、
+ * LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner を手動で実装しています。
+ *
+ * これにより、充電開始時に自動的に起動し、リッチなUIを提供することが可能になります。
  */
 class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
 
-    // 1. Composeを動かすための管理者オブジェクトたち
+    // 1. ComposeとViewModelをホストするための管理者オブジェクト
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val store = ViewModelStore()
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
@@ -40,7 +45,7 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
 
     override fun onCreate() {
         super.onCreate()
-        // ライフサイクルの開始と状態の復元
+        // 状態の復元とライフサイクルの初期化
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     }
@@ -48,22 +53,21 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        // ユーザーのタップ操作などを有効にする
-        isInteractive = true
-        // ステータスバーなどを隠して全画面表示にする
-        isFullscreen = true
+        // スクリーンセーバーの設定
+        isInteractive = true // タップ操作を有効化
+        isFullscreen = true  // ステータスバーを隠す
 
-        // 2. Window（画面）に対して「私が管理者です」と登録する
-        // これをしないと、Composeの中で viewModel() を呼んだ時にクラッシュします
+        // 2. Window（DecorView）に対してオーナーを登録
+        // これを行わないと、Compose内部で `viewModel()` や `LocalLifecycleOwner` が機能しません
         window.decorView.let { view ->
             view.setViewTreeLifecycleOwner(this)
             view.setViewTreeViewModelStoreOwner(this)
             view.setViewTreeSavedStateRegistryOwner(this)
         }
 
-        // 3. ComposeのUIをセット
+        // 3. Compose UIのセットアップ
         setContentView(ComposeView(this).apply {
-            // Viewがウィンドウから外れたらコンポジションを破棄する設定
+            // Serviceのライフサイクルに合わせてコンポジションを破棄する設定
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
@@ -73,22 +77,31 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
             }
         })
 
-        // ライフサイクルを「開始」に進める
+        // Viewの準備ができたので START 状態へ
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+    }
+
+    // ★ Refactor: 実際に画面が表示され、夢を見始めたタイミングで RESUME にする
+    override fun onDreamingStarted() {
+        super.onDreamingStarted()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    }
+
+    // ★ Refactor: 夢から覚める（画面が消える）タイミングで PAUSE にする
+    override fun onDreamingStopped() {
+        super.onDreamingStopped()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        // ライフサイクルを「終了」に進める
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        // Windowから外れたら STOP
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // ViewModelなどのデータを破棄する
+        // 完全に破棄されたら ViewModel もクリアし、DESTROY
         store.clear()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }

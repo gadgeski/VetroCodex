@@ -1,3 +1,5 @@
+// app/src/main/java/com/example/vetro/ui/components/GlassText.kt
+
 package com.example.vetro.ui.components
 
 import android.graphics.RenderEffect
@@ -22,8 +24,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 
 /**
- * GlassText
- * 背景画像をすりガラス状にぼかして、テキストの形状で切り抜くコンポーネント。
+ * GlassText Component
+ *
+ * Android 12 (API 31) 以降の RenderEffect を活用し、
+ * 背景画像をリアルタイムでぼかし、それをテキストの形状で切り抜く（Masking）ことで
+ * すりガラス（Frosted Glass）のような視覚効果を実現します。
+ *
+ * @param bgImage 切り抜く対象となる背景画像（壁紙など）
  */
 @Composable
 fun GlassText(
@@ -34,7 +41,7 @@ fun GlassText(
     blurRadius: Float = 40f,
     tintColor: Color = Color.White
 ) {
-    // Android 12 (API 31) 未満へのフォールバック（単なる半透明白文字）
+    // API 31未満へのフォールバック: RenderEffectが使えないため、単なる半透明テキストを表示
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
         Text(
             text = text,
@@ -45,47 +52,53 @@ fun GlassText(
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // --- レイヤー1: マスク処理 (背景をぼかして文字型に切り抜く) ---
+        // --- Layer 1: Masking (Blur & Cutout) ---
+        // 背景をぼかし、テキストの形に切り抜く処理
         Box(
             modifier = Modifier.graphicsLayer {
-                // このBox内だけで合成計算を完結させる（重要）
+                // オフスクリーンバッファを使用し、このBox内だけで合成計算を完結させる。
+                // これにより、BlendMode.SrcIn が親コンポーネント（背景）まで突き抜けるのを防ぐ。
                 compositingStrategy = CompositingStrategy.Offscreen
             }
         ) {
-            // A. 切り抜く型（テキスト）
+            // A. 切り抜く型（DST）: テキスト
             Text(
                 text = text,
                 style = style,
-                color = Color.Black, // 色はマスク用なので何でも良い
+                color = Color.Black, // マスク用なので色は不問（アルファ値だけが重要）
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            // B. 埋め込む素材（ぼかした背景画像）
+
+
+            // B. 埋め込む素材（SRC）: ぼかした背景画像
+            // BlendMode.SrcIn により、A（テキスト）と重なる部分だけが描画される
             Image(
                 bitmap = bgImage,
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop, // 画面いっぱいに広げて壁紙と位置を合わせる
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
+                        // Android 12+ のぼかし効果を適用
                         renderEffect = RenderEffect
                             .createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR)
                             .asComposeRenderEffect()
 
-                        // 【エラー修正箇所】
-                        // BlendModeのインポートがあれば、このプロパティは正しく認識されます。
-                        this.blendMode = BlendMode.SrcIn
+                        // 重なり部分のみを描画
+                        blendMode = BlendMode.SrcIn
                     }
             )
         }
 
-        // --- レイヤー2: 質感（ハイライトと輪郭） ---
+        // --- Layer 2: Reflection & Highlight ---
+        // ガラスの厚みや光の反射を表現するために、薄いグラデーションを上から重ねる
         Text(
             text = text,
             style = style.copy(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        tintColor.copy(alpha = 0.7f), // 左上: 明るい反射
+                        tintColor.copy(alpha = 0.7f), // 左上: 強い反射（ハイライト）
                         tintColor.copy(alpha = 0.1f)  // 右下: 透け感
                     ),
                     start = Offset(0f, 0f),

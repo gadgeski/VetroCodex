@@ -1,4 +1,5 @@
-// VetroWidgetRenderer.kt
+// app/src/main/java/com/example/vetro/widget/VetroWidgetRenderer.kt
+
 package com.example.vetro.widget
 
 import android.annotation.SuppressLint
@@ -25,34 +26,46 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-@Suppress("unused")
+/**
+ * VetroWidgetRenderer
+ *
+ * RemoteViewsの制約を回避するため、バックグラウンドでCanvasを使用して
+ * 「壁紙 + 時計 + ガラスエフェクト」を1枚のBitmapとして合成・生成するレンダラー。
+ *
+ * NOTE: この機能は実験的（Experimental）であり、現在のメイン機能はDaydreamServiceに移行しています。
+ */
 object VetroWidgetRenderer {
 
     private const val TAG = "VetroWidgetRenderer"
 
-    // 【修正】引数に wallpaperIndex を追加
-    fun renderWidgetBitmap(context: Context, width: Float, height: Float, wallpaperIndex: Int = 0): Bitmap {
-        Log.d(TAG, "Start rendering widget: w=$width, h=$height, idx=$wallpaperIndex")
+    /**
+     * 指定されたサイズでウィジェット用のBitmapを生成します。
+     */
+    fun renderWidgetBitmap(context: Context, width: Float, height: Float): Bitmap {
+        Log.d(TAG, "Start rendering widget: w=$width, h=$height")
 
+        // ゼロサイズ対策
         val w = if (width > 0) width.toInt() else 300
         val h = if (height > 0) height.toInt() else 300
 
         val bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        // 1. 背景画像の描画 (インデックスを渡す)
-        val bgBitmap = getWallpaperOrFallback(context, w, h, wallpaperIndex)
+        // 1. 背景画像の描画（システム壁紙 or デフォルト画像）
+        val bgBitmap = getWallpaperOrFallback(context, w, h)
 
         if (bgBitmap != null) {
+            // 中央で切り抜いて描画（Center Crop）
             val srcRect = getCenterCropRect(bgBitmap.width, bgBitmap.height, w, h)
             val dstRect = Rect(0, 0, w, h)
             val paint = Paint().apply { isFilterBitmap = true }
             canvas.drawBitmap(bgBitmap, srcRect, dstRect, paint)
         } else {
+            // 最終フォールバック
             canvas.drawColor(Color.DKGRAY)
         }
 
-        // 2. 時刻と日付の描画
+        // 2. 時計盤面（テキストとエフェクト）の描画
         drawClockFace(context, canvas, w.toFloat(), h.toFloat())
 
         return bitmap
@@ -62,13 +75,15 @@ object VetroWidgetRenderer {
         val timeText = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
         val dateText = LocalDate.now().format(DateTimeFormatter.ofPattern("M月d日 (E)"))
 
+        // カスタムフォントの読み込み
         val timeTypeface = try {
             ResourcesCompat.getFont(context, R.font.custom_thin_font)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Typeface.DEFAULT
         }
         val dateTypeface = Typeface.DEFAULT_BOLD
 
+        // フォントサイズの動的計算（横幅の90%に収まるように調整）
         val targetWidth = width * 0.9f
         val testPaint = Paint().apply {
             this.typeface = timeTypeface
@@ -79,16 +94,17 @@ object VetroWidgetRenderer {
         val scaleFactor = targetWidth / safeTextWidth
         val timeFontSize = 100f * scaleFactor
 
+        // 配置計算
         val centerX = width / 2f
         val timeFontMetrics = Paint().apply { this.textSize = timeFontSize; this.typeface = timeTypeface }.fontMetrics
         val timeTextHeight = timeFontMetrics.descent - timeFontMetrics.ascent
-
         val timeY = (height / 2f) + (timeTextHeight / 3f)
 
         val dateFontSize = timeFontSize * 0.13f
         val dateOffsetY = -20f
         val dateY = timeY - timeTextHeight + timeFontMetrics.descent - (dateFontSize * 0.8f) + dateOffsetY
 
+        // --- A. 日付の描画 ---
         val datePaint = Paint().apply {
             this.typeface = dateTypeface
             this.textSize = dateFontSize
@@ -99,12 +115,14 @@ object VetroWidgetRenderer {
         }
         canvas.drawText(dateText, centerX, dateY, datePaint)
 
+        // --- B. 時刻の描画（グラデーション透過） ---
         val fillPaint = Paint().apply {
             this.typeface = timeTypeface
             this.textSize = timeFontSize
             this.textAlign = Paint.Align.CENTER
             this.isAntiAlias = true
             this.style = Paint.Style.FILL
+            // 上から下へ透明になるグラデーション
             this.shader = LinearGradient(
                 0f, timeY - timeTextHeight, 0f, timeY,
                 Color.argb(200, 255, 255, 255),
@@ -114,6 +132,8 @@ object VetroWidgetRenderer {
         }
         canvas.drawText(timeText, centerX, timeY, fillPaint)
 
+        // --- C. 時刻の描画（輪郭線・Stroke） ---
+        // 輪郭を描くことで、背景が明るくても視認性を確保する
         val strokePaint = Paint().apply {
             this.typeface = timeTypeface
             this.textSize = timeFontSize
@@ -127,55 +147,46 @@ object VetroWidgetRenderer {
         canvas.drawText(timeText, centerX, timeY, strokePaint)
     }
 
-    // 【修正】wallpaperIndex を受け取り、画像を切り替える
-    private fun getWallpaperOrFallback(context: Context, reqW: Int, reqH: Int, wallpaperIndex: Int): Bitmap? {
-        // システム壁紙を使うかどうか（indexが0の時だけシステム壁紙、などルールを決める）
-        // ここでは「0 = システム壁紙 or デフォルト画像」「1 = 2枚目の画像」とします
-
+    /**
+     * 壁紙を取得し、指定サイズに合わせてリサイズ・デコードして返します。
+     * 取得できない場合はアプリ内リソースを返します。
+     */
+    private fun getWallpaperOrFallback(context: Context, reqW: Int, reqH: Int): Bitmap? {
         var bitmap: Bitmap? = null
 
-        if (wallpaperIndex == 0) {
-            // --- パターン0: システム壁紙 (取れなければ background_img) ---
-            bitmap = try {
-                val wallpaperManager = WallpaperManager.getInstance(context)
-                @SuppressLint("MissingPermission")
-                val drawable = try { wallpaperManager.drawable } catch(e:Exception) { null }
-                drawable?.toBitmap()
-            } catch (e: Exception) {
-                null
-            }
+        // 1. システム壁紙の取得を試みる
+        try {
+            val wallpaperManager = WallpaperManager.getInstance(context)
+            @SuppressLint("MissingPermission")
+            val drawable = try { wallpaperManager.drawable } catch (_: Exception) { null }
+            bitmap = drawable?.toBitmap()
+        } catch (_: Exception) {
+            // 権限エラーなどは無視してフォールバックへ
         }
 
+        // 2. 失敗した場合はデフォルト画像を使用
         if (bitmap == null) {
-            // 壁紙が取れなかった(index=0) または 2枚目を指定された(index=1) 場合
             try {
-                // 画像リソースIDを決定
-                val resourceId = if (wallpaperIndex == 1) {
-                    // ★ここに2枚目の画像を指定 (background_img_2 が必要です！)
-                    R.drawable.background_img_2
-                } else {
-                    R.drawable.background_img
-                }
-
+                val resourceId = R.drawable.background_img
                 val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 BitmapFactory.decodeResource(context.resources, resourceId, options)
                 options.inSampleSize = calculateInSampleSize(options, reqW, reqH)
                 options.inJustDecodeBounds = false
                 bitmap = BitmapFactory.decodeResource(context.resources, resourceId, options)
             } catch (e: Exception) {
-                Log.e(TAG, "Image load failed for index $wallpaperIndex", e)
-                // 失敗したらデフォルトに戻す
-                bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.background_img)
+                Log.e(TAG, "Default image load failed", e)
             }
         }
 
-        if (bitmap != null) {
-            return scaleBitmapToFit(bitmap, reqW, reqH)
+        // 3. サイズ調整
+        return if (bitmap != null) {
+            scaleBitmapToFit(bitmap, reqW, reqH)
+        } else {
+            null
         }
-
-        return null
     }
 
+    // メモリ効率のための縮小率計算
     private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
         val (height: Int, width: Int) = options.outHeight to options.outWidth
         var inSampleSize = 1
@@ -189,20 +200,24 @@ object VetroWidgetRenderer {
         return inSampleSize
     }
 
+    // アスペクト比を維持したリサイズ
     private fun scaleBitmapToFit(bitmap: Bitmap, reqW: Int, reqH: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
+        // 既に十分小さいならそのまま返す
         if (width <= reqW * 1.5 && height <= reqH * 1.5) return bitmap
+
         val scale = max(reqW.toFloat() / width, reqH.toFloat() / height)
         val newW = (width * scale).roundToInt()
         val newH = (height * scale).roundToInt()
         return try {
             bitmap.scale(newW, newH, true)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             bitmap
         }
     }
 
+    // 中央切り抜き用のRect計算
     private fun getCenterCropRect(srcW: Int, srcH: Int, dstW: Int, dstH: Int): Rect {
         val srcAspect = srcW.toFloat() / srcH
         val dstAspect = dstW.toFloat() / dstH
