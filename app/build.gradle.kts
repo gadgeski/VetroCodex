@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.vetro"
+    namespace = "com.gadgeski.vetro"
 
     // 警告に従い 36 (Android 16 プレビュー相当) に設定
     // もしビルドエラーが出る場合は 35 や 34 に下げてください
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.vetro"
+        applicationId = "com.gadgeski.vetro"
         minSdk = 26
         targetSdk = 36 // compileSdkに合わせて36に設定
         versionCode = 1
