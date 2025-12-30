@@ -14,12 +14,13 @@ android {
     defaultConfig {
         applicationId = "com.gadgeski.vetro"
         minSdk = 26
-        targetSdk = 36 // compileSdkに合わせて36に設定
+        targetSdk = 36
+        // compileSdkに合わせて36に設定
         versionCode = 1
         versionName = "1.0"
 
         // 【追加】 OpenWeatherMap API Key (本来は local.properties から読み込むべきですが、今回はプレースホルダー)
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"YOUR_API_KEY\"")
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"YOUR_OPEN_WEATHER_API_KEY_HERE\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -51,7 +52,9 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true // BuildConfigを有効化
+        buildConfig = true
+        // 【重要】BuildConfigクラスを自動生成させる設定
+        // WeatherRepository で BuildConfig を使うならこれが必須です
     }
 
     packaging {
