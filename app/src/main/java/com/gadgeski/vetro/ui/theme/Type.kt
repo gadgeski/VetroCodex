@@ -1,4 +1,3 @@
-// Type.kt
 package com.gadgeski.vetro.ui.theme
 
 import androidx.compose.material3.Typography
@@ -9,27 +8,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.gadgeski.vetro.R
 
-// res/font/custom_thin_font.ttf がある前提
-// ない場合は FontFamily.Default に切り替わります
-val CustomFontFamily = try {
-    FontFamily(Font(R.font.custom_thin_font, FontWeight.Thin))
-} catch (_: Exception) {
-    // ★修正: "e" を "_" に変更
-    FontFamily.Default
-}
+// 1. カスタムフォントファミリーの定義 (BBH Bartle)
+// ※ R.font.bbh_bartle が未解決になる場合、app/src/main/res/font/ に bbh_bartle.ttf を配置してください
+val BBHBartleFontFamily = FontFamily(
+    Font(R.font.bbh_bartle, FontWeight.Normal)
+)
 
+// 2. タイポグラフィの設定
 val Typography = Typography(
+    // 時計の「時」「分」表示用 (Display Large)
+    // 画面いっぱいに表示するため、非常に大きなサイズを定義します
     displayLarge = TextStyle(
-        fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Thin,
-        fontSize = 180.sp,
-        letterSpacing = (-4).sp
-    // 文字間を詰めてモダンに
+        fontFamily = BBHBartleFontFamily,
+        fontWeight = FontWeight.Normal,
+        // ここでのサイズは基準値です。実際のUIでは画面幅に合わせてスケーリングします
+        fontSize = 120.sp,
+        lineHeight = 120.sp,
+        letterSpacing = (-2).sp
     ),
-    headlineMedium = TextStyle(
-        fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Light,
-        fontSize = 32.sp,
-        letterSpacing = 2.sp
+    // 日付や補足情報用 (Display Medium)
+    displayMedium = TextStyle(
+        fontFamily = BBHBartleFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
     )
+
+    /* * その他のスタイル（bodyLargeなど）はデフォルトのままにします。
+     * 設定画面などは標準フォントの方が読みやすいためです。
+     */
 )

@@ -2,25 +2,23 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
+    // 【追加】 Hiltプラグイン (libs経由)
+    id("kotlin-kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.gadgeski.vetro"
 
     // 警告に従い 36 (Android 16 プレビュー相当) に設定
-    // もしビルドエラーが出る場合は 35 や 34 に下げてください
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.gadgeski.vetro"
         minSdk = 26
         targetSdk = 36
-        // compileSdkに合わせて36に設定
         versionCode = 1
         versionName = "1.0"
-
-        // 【追加】 OpenWeatherMap API Key (本来は local.properties から読み込むべきですが、今回はプレースホルダー)
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"YOUR_OPEN_WEATHER_API_KEY_HERE\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -43,7 +41,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    // 【維持】 jvmTarget の設定
     kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
@@ -53,8 +50,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-        // 【重要】BuildConfigクラスを自動生成させる設定
-        // WeatherRepository で BuildConfig を使うならこれが必須です
     }
 
     packaging {
@@ -78,17 +73,12 @@ dependencies {
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // 【追加】 ウィジェット (Glance) 用ライブラリ
-    // libs.versions.toml で定義したアクセサを使用
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
-    implementation(libs.androidx.work.runtime.ktx)
+    // 【追加】 Hilt (DI) - libs経由
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    // 【追加】 天気機能用
-    implementation(libs.retrofit)
-    implementation(libs.converter.moshi)
-    implementation(libs.moshi.kotlin)
-    implementation(libs.play.services.location)
+    // 【追加】 WindowManager - libs経由
+    implementation(libs.androidx.window)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

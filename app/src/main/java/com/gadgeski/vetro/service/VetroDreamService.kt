@@ -1,8 +1,13 @@
-// app/src/main/java/com/gadgeski/vetro/service/VetroDreamService.kt
-
 package com.gadgeski.vetro.service
 
 import android.service.dreams.DreamService
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.Lifecycle
@@ -16,8 +21,10 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.gadgeski.vetro.ui.screen.ClockScreen
 import com.gadgeski.vetro.ui.theme.VetroTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+// 削除: import com.gadgeski.vetro.ui.screen.ClockScreen
 
 /**
  * Androidのスクリーンセーバー (Daydream) として動作するサービス
@@ -27,9 +34,11 @@ import com.gadgeski.vetro.ui.theme.VetroTheme
  *
  * これにより、充電開始時に自動的に起動し、リッチなUIを提供することが可能になります。
  */
+@AndroidEntryPoint // Hiltを使用可能にするアノテーション
 class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
 
     // 1. ComposeとViewModelをホストするための管理者オブジェクト
+    // ※ これらのライフサイクル管理コードは、Composeを動かすために必須なので残します
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val store = ViewModelStore()
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
@@ -58,7 +67,6 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
         isFullscreen = true  // ステータスバーを隠す
 
         // 2. Window（DecorView）に対してオーナーを登録
-        // これを行わないと、Compose内部で `viewModel()` や `LocalLifecycleOwner` が機能しません
         window.decorView.let { view ->
             view.setViewTreeLifecycleOwner(this)
             view.setViewTreeViewModelStoreOwner(this)
@@ -72,7 +80,19 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
 
             setContent {
                 VetroTheme {
-                    ClockScreen()
+                    // ClockScreen() は削除しました。
+                    // MainActivityと同様に、黒背景と仮テキストを表示して動作確認できるようにします。
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.Black
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "Vetro Screensaver Ready",
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         })
@@ -81,13 +101,13 @@ class VetroDreamService : DreamService(), LifecycleOwner, ViewModelStoreOwner, S
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
     }
 
-    // ★ Refactor: 実際に画面が表示され、夢を見始めたタイミングで RESUME にする
+    // 実際に画面が表示され、夢を見始めたタイミングで RESUME にする
     override fun onDreamingStarted() {
         super.onDreamingStarted()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
     }
 
-    // ★ Refactor: 夢から覚める（画面が消える）タイミングで PAUSE にする
+    // 夢から覚める（画面が消える）タイミングで PAUSE にする
     override fun onDreamingStopped() {
         super.onDreamingStopped()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
