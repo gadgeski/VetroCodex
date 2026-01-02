@@ -34,11 +34,19 @@ Vetro/
 │       │   │               ├── VetroApp.kt
 │       │   │               ├── service
 │       │   │               │   └── VetroDreamService.kt
-│       │   │               └── ui
-│       │   │                   └── theme
-│       │   │                       ├── Color.kt
-│       │   │                       ├── Theme.kt
-│       │   │                       └── Type.kt
+│       │   │               ├── ui
+│       │   │               │   ├── components
+│       │   │               │   │   └── BigTimeDisplay.kt
+│       │   │               │   ├── screens
+│       │   │               │   │   └── DeskClockScreen.kt
+│       │   │               │   ├── theme
+│       │   │               │   │   ├── Color.kt
+│       │   │               │   │   ├── Theme.kt
+│       │   │               │   │   └── Type.kt
+│       │   │               │   └── viewmodel
+│       │   │               │       └── ClockViewModel.kt
+│       │   │               └── util
+│       │   │                   └── HingeSensor.kt
 │       │   └── res
 │       │       ├── drawable
 │       │       │   ├── background_img.png
@@ -96,5 +104,5 @@ Vetro/
 ├── local.properties
 └── settings.gradle.kts
 
-39 directories, 57 files
+43 directories, 61 files
 ```
