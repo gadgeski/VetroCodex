@@ -55,7 +55,9 @@ Vetro/
 │       │       │   ├── ic_launcher_background.xml
 │       │       │   └── ic_launcher_foreground.xml
 │       │       ├── font
-│       │       │   └── bbh_bartle.ttf
+│       │       │   ├── bbh_bartle.ttf
+│       │       │   ├── orbitron_bold.ttf
+│       │       │   └── orbitron_medium.ttf
 │       │       ├── mipmap-anydpi
 │       │       ├── mipmap-anydpi-v26
 │       │       │   ├── ic_launcher.xml
@@ -105,5 +107,5 @@ Vetro/
 ├── local.properties
 └── settings.gradle.kts
 
-43 directories, 62 files
+43 directories, 64 files
 ```
