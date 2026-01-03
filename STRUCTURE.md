@@ -32,11 +32,15 @@ Vetro/
 │       │   │           └── vetro
 │       │   │               ├── MainActivity.kt
 │       │   │               ├── VetroApp.kt
+│       │   │               ├── data
+│       │   │               │   ├── ClockMode.kt
+│       │   │               │   └── UserPreferencesRepository.kt
 │       │   │               ├── service
 │       │   │               │   └── VetroDreamService.kt
 │       │   │               ├── ui
 │       │   │               │   ├── components
-│       │   │               │   │   └── BigTimeDisplay.kt
+│       │   │               │   │   ├── BigTimeDisplay.kt
+│       │   │               │   │   └── SettingsDialog.kt
 │       │   │               │   ├── screens
 │       │   │               │   │   ├── CyberpunkClockScreen.kt
 │       │   │               │   │   └── DeskClockScreen.kt
@@ -45,7 +49,8 @@ Vetro/
 │       │   │               │   │   ├── Theme.kt
 │       │   │               │   │   └── Type.kt
 │       │   │               │   └── viewmodel
-│       │   │               │       └── ClockViewModel.kt
+│       │   │               │       ├── ClockViewModel.kt
+│       │   │               │       └── MainViewModel.kt
 │       │   │               └── util
 │       │   │                   └── HingeSensor.kt
 │       │   └── res
@@ -107,5 +112,5 @@ Vetro/
 ├── local.properties
 └── settings.gradle.kts
 
-43 directories, 64 files
+44 directories, 68 files
 ```
