@@ -10,9 +10,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -42,13 +45,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Edge-to-Edge 有効化
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT)
         )
 
-        // 常時点灯モード
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         setContent {
@@ -56,17 +57,14 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = hiltViewModel()
                 val currentMode by viewModel.currentMode.collectAsState()
 
-                // 設定ダイアログの表示状態
                 var showSettings by remember { mutableStateOf(false) }
 
-                // 【追加】画面の向きを検知
                 val configuration = LocalConfiguration.current
                 val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        // 画面全体に対するジェスチャー検知 (長押しも残す)
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onLongPress = {
@@ -75,39 +73,46 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                 ) {
-                    // 1. モードに応じた画面表示
                     when (currentMode) {
                         ClockMode.MINIMAL -> DeskClockScreen()
                         ClockMode.CYBERPUNK -> CyberpunkClockScreen()
                     }
 
-                    // 2. 設定ボタン
-                    // 横向き(Landscape)なら「左上」、それ以外(縦)なら「右上」に配置
-                    // これにより、横画面時に右側の情報パネルと重なるのを防ぎます
-                    val buttonAlignment = if (isLandscape) Alignment.TopStart else Alignment.TopEnd
+                    // 【修正】設定ボタンの配置ロジック
+                    // モードと画面の向きに応じて、最も邪魔にならない「安全地帯」を選びます
+                    val buttonAlignment = when (currentMode) {
+                        // Minimalモード:
+                        // 時(左上)・分(右下)のレイアウトなので、空いている「左下」がベストポジションです。
+                        ClockMode.MINIMAL -> Alignment.BottomStart
+
+                        // Cyberpunkモード:
+                        // 横向きなら左上、縦向きなら右上（既存ロジック）
+                        ClockMode.CYBERPUNK -> if (isLandscape) Alignment.TopStart else Alignment.TopEnd
+                    }
 
                     IconButton(
                         onClick = { showSettings = true },
                         modifier = Modifier
-                            .align(buttonAlignment) // 動的に位置を変更
-                            .padding(24.dp) // 角から少し離す
-                            .size(48.dp) // タップ領域は大きめに確保
+                            .align(buttonAlignment)
+                            // システムバー（ナビゲーションバー等）と重ならないようインセットを考慮
+                            .windowInsetsPadding(WindowInsets.safeDrawing)
+                            .padding(24.dp)
+                            .size(48.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = Color.White.copy(alpha = 0.2f), // 亡霊のように薄くする
-                            modifier = Modifier.fillMaxSize(0.6f) // アイコン自体の見た目は少し小さく
+                            tint = Color.White.copy(alpha = 0.2f),
+                            modifier = Modifier.fillMaxSize(0.6f)
                         )
                     }
 
-                    // 3. 設定ダイアログの表示
                     if (showSettings) {
                         SettingsDialog(
                             currentMode = currentMode,
                             onModeSelected = { newMode ->
                                 viewModel.selectMode(newMode)
-                                showSettings = false // 選択したら閉じる
+                                showSettings = false
                             },
                             onDismiss = { showSettings = false }
                         )
