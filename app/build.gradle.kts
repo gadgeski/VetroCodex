@@ -71,11 +71,13 @@ dependencies {
     // Hilt (DI)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    // 【追加】 これで hiltViewModel() が使えるようになります
     implementation(libs.androidx.hilt.navigation.compose)
 
     // WindowManager
     implementation(libs.androidx.window)
+
+    // 【追加】 DataStore (設定保存)
+    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

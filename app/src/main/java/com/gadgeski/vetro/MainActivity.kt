@@ -7,13 +7,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.gadgeski.vetro.data.ClockMode
+import com.gadgeski.vetro.ui.components.SettingsDialog
 import com.gadgeski.vetro.ui.screens.CyberpunkClockScreen
+import com.gadgeski.vetro.ui.screens.DeskClockScreen
 import com.gadgeski.vetro.ui.theme.VetroTheme
+import com.gadgeski.vetro.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
-// 新しいサイバーパンク画面(import com.gadgeski.vetro.ui.screens.CyberpunkClockScreen)
-// import com.gadgeski.vetro.ui.screens.DeskClockScreen
-// 元の時計画面（戻すときはコメントアウトを解除）
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -31,13 +42,43 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VetroTheme {
-                // 作成した時計画面を表示
+                val viewModel: MainViewModel = hiltViewModel()
+                val currentMode by viewModel.currentMode.collectAsState()
 
-                // 通常モード（ミニマル）
-                // DeskClockScreen()
+                // 設定ダイアログの表示状態
+                var showSettings by remember { mutableStateOf(false) }
 
-                // 実験モード（サイバーパンク）
-                CyberpunkClockScreen()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        // 画面全体に対するジェスチャー検知
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    // 長押しで設定画面を開く
+                                    showSettings = true
+                                }
+                            )
+                        }
+                ) {
+                    // モードに応じた画面表示
+                    when (currentMode) {
+                        ClockMode.MINIMAL -> DeskClockScreen()
+                        ClockMode.CYBERPUNK -> CyberpunkClockScreen()
+                    }
+
+                    // 設定ダイアログの表示
+                    if (showSettings) {
+                        SettingsDialog(
+                            currentMode = currentMode,
+                            onModeSelected = { newMode ->
+                                viewModel.selectMode(newMode)
+                                showSettings = false // 選択したら閉じる
+                            },
+                            onDismiss = { showSettings = false }
+                        )
+                    }
+                }
             }
         }
     }
