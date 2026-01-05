@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.service
+package com.gadgeski.vetrocodex.service
 
 import android.service.dreams.DreamService
 import androidx.compose.foundation.layout.Box
@@ -21,7 +21,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.gadgeski.vetro.ui.theme.VetroTheme
+import com.gadgeski.vetrocodex.ui.theme.VetroTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 // 削除: import com.gadgeski.vetro.ui.screen.ClockScreen

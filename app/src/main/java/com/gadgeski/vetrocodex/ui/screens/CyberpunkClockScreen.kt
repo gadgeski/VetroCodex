@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.screens
+package com.gadgeski.vetrocodex.ui.screens
 
 import android.content.Context
 import android.content.res.Configuration
@@ -62,12 +62,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.gadgeski.vetro.R
-import com.gadgeski.vetro.ui.theme.BBHBartleFontFamily
-import com.gadgeski.vetro.ui.theme.OrbitronFontFamily
-import com.gadgeski.vetro.ui.viewmodel.ClockViewModel
-import com.gadgeski.vetro.util.HingePosture
-import com.gadgeski.vetro.util.rememberHingePosture
+import com.gadgeski.vetrocodex.R
+import com.gadgeski.vetrocodex.ui.theme.BBHBartleFontFamily
+import com.gadgeski.vetrocodex.ui.theme.OrbitronFontFamily
+import com.gadgeski.vetrocodex.ui.viewmodel.ClockViewModel
+import com.gadgeski.vetrocodex.util.HingePosture
+import com.gadgeski.vetrocodex.util.rememberHingePosture
 import kotlinx.coroutines.delay
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

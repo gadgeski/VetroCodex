@@ -1,4 +1,4 @@
-package com.gadgeski.vetro
+package com.gadgeski.vetrocodex
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
@@ -9,4 +9,4 @@ import dagger.hilt.android.HiltAndroidApp
  * アプリ起動時に一番最初に実行され、DIコンテナの初期化を行います。
  */
 @HiltAndroidApp
-class VetroApp : Application()
+class VetroCodexApp : Application()

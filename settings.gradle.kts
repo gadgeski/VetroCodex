@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Vetro"
+rootProject.name = "VetroCodex"
 include(":app")

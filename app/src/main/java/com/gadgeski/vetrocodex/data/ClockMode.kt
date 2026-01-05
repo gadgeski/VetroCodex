@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.data
+package com.gadgeski.vetrocodex.data
 
 /**
  * Vetroの表示モード定義

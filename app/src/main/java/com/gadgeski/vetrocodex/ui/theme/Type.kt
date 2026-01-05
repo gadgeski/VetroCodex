@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.theme
+package com.gadgeski.vetrocodex.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.gadgeski.vetro.R
+import com.gadgeski.vetrocodex.R
 
 // 1. カスタムフォントファミリーの定義 (BBH Bartle)
 val BBHBartleFontFamily = FontFamily(

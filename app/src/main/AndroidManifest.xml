@@ -4,7 +4,7 @@
 
     <!-- android:name に作成した VetroApp を指定します -->
     <application
-        android:name=".VetroApp"
+        android:name=".VetroCodexApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

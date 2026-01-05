@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.viewmodel
+package com.gadgeski.vetrocodex.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

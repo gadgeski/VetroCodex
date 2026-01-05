@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.components
+package com.gadgeski.vetrocodex.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints

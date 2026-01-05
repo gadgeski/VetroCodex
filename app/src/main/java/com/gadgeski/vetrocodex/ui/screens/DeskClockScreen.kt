@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.screens
+package com.gadgeski.vetrocodex.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.gadgeski.vetro.ui.components.BigTimeDisplay
-import com.gadgeski.vetro.ui.viewmodel.ClockViewModel
-import com.gadgeski.vetro.util.HingePosture
-import com.gadgeski.vetro.util.rememberHingePosture
+import com.gadgeski.vetrocodex.ui.components.BigTimeDisplay
+import com.gadgeski.vetrocodex.ui.viewmodel.ClockViewModel
+import com.gadgeski.vetrocodex.util.HingePosture
+import com.gadgeski.vetrocodex.util.rememberHingePosture
 import kotlin.random.Random
 
 /**

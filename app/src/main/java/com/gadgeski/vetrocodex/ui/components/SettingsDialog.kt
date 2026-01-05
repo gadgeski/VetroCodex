@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.ui.components
+package com.gadgeski.vetrocodex.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gadgeski.vetro.data.ClockMode
-import com.gadgeski.vetro.ui.theme.BBHBartleFontFamily
+import com.gadgeski.vetrocodex.data.ClockMode
+import com.gadgeski.vetrocodex.ui.theme.BBHBartleFontFamily
 
 /**
  * モード切り替え用の設定ダイアログ

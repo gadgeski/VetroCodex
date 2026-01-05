@@ -1,9 +1,9 @@
-package com.gadgeski.vetro.ui.viewmodel
+package com.gadgeski.vetrocodex.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gadgeski.vetro.data.ClockMode
-import com.gadgeski.vetro.data.UserPreferencesRepository
+import com.gadgeski.vetrocodex.data.ClockMode
+import com.gadgeski.vetrocodex.data.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

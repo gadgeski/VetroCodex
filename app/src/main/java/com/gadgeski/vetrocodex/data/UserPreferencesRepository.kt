@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.data
+package com.gadgeski.vetrocodex.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

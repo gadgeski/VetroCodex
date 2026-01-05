@@ -1,4 +1,4 @@
-package com.gadgeski.vetro
+package com.gadgeski.vetrocodex
 
 import org.junit.Test
 

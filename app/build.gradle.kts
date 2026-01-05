@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.gadgeski.vetro"
+    namespace = "com.gadgeski.vetrocodex"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.gadgeski.vetro"
+        applicationId = "com.gadgeski.vetrocodex"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

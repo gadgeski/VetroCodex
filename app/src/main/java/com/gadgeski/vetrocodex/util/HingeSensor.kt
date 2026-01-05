@@ -1,4 +1,4 @@
-package com.gadgeski.vetro.util
+package com.gadgeski.vetrocodex.util
 
 import android.app.Activity
 import androidx.compose.runtime.Composable

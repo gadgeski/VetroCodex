@@ -1,4 +1,4 @@
-package com.gadgeski.vetro
+package com.gadgeski.vetrocodex
 
 import android.content.res.Configuration
 import android.graphics.Color as AndroidColor
@@ -32,12 +32,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.gadgeski.vetro.data.ClockMode
-import com.gadgeski.vetro.ui.components.SettingsDialog
-import com.gadgeski.vetro.ui.screens.CyberpunkClockScreen
-import com.gadgeski.vetro.ui.screens.DeskClockScreen
-import com.gadgeski.vetro.ui.theme.VetroTheme
-import com.gadgeski.vetro.ui.viewmodel.MainViewModel
+import com.gadgeski.vetrocodex.data.ClockMode
+import com.gadgeski.vetrocodex.ui.components.SettingsDialog
+import com.gadgeski.vetrocodex.ui.screens.CyberpunkClockScreen
+import com.gadgeski.vetrocodex.ui.screens.DeskClockScreen
+import com.gadgeski.vetrocodex.ui.theme.VetroTheme
+import com.gadgeski.vetrocodex.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
