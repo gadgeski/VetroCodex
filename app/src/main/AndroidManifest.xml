@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- android:name に作成した VetroApp を指定します -->
+    <!-- android:name は VetroCodexApp でOK -->
     <application
         android:name=".VetroCodexApp"
         android:allowBackup="true"
@@ -12,13 +12,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Vetro"
+        android:theme="@style/Theme.VetroCodex"
         tools:targetApi="31">
+        <!-- ↑ 【修正】 Theme.Vetro から Theme.VetroCodex に変更 -->
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Vetro">
+            android:theme="@style/Theme.VetroCodex">
+            <!-- ↑ 【修正】 Activityごとのテーマ指定も合わせる -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

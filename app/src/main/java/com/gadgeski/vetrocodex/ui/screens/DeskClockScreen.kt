@@ -28,10 +28,10 @@ import com.gadgeski.vetrocodex.util.rememberHingePosture
 import kotlin.random.Random
 
 /**
- * 時計画面のルート
+ * 時計画面のルート (Minimal Mode)
  *
  * - ヒンジ状態（半開きかどうか）を検知し、レイアウトを自動調整します。
- * - 【New】焼き付き防止（Pixel Shift / Scale）ロジックを追加
+ * - 焼き付き防止（Pixel Shift / Scale）ロジックを搭載
  */
 @Composable
 fun DeskClockScreen(
@@ -39,32 +39,24 @@ fun DeskClockScreen(
 ) {
     val currentTime by viewModel.currentTime.collectAsState()
 
-    // ヒンジの状態を監視 (FLAT or HALF_OPENED)
+    // ヒンジの状態を監視
     val hingePosture by rememberHingePosture()
 
     // ------------------------------------------------------------
     // 焼き付き防止 (Burn-in Protection) ロジック
     // ------------------------------------------------------------
 
-    // 1. Pixel Shift: 位置をずらすオフセット量 (px単位だとデバイス依存なのでdpで管理し、offset修飾子で適用)
-    // 1分ごとに更新するため、currentTime.minute をキーにします
     var shiftOffsetX by remember { mutableStateOf(0.dp) }
     var shiftOffsetY by remember { mutableStateOf(0.dp) }
-
-    // 2. Scale Breathing: サイズを微妙に変える
-    // 10分ごとに更新するため、(currentTime.minute / 10) をキーにします
     var breathingScale by remember { mutableFloatStateOf(1.0f) }
 
-    // 時刻の「分」が変わるたびにピクセルシフトを実行
     LaunchedEffect(currentTime.minute) {
-        // 上下左右に -8dp 〜 +8dp の範囲でランダムに移動
-        // ※ あまり大きく動かすと、画面端で見切れる可能性があるので控えめに
+        // Pixel Shift
         shiftOffsetX = Random.nextInt(-8, 9).dp
         shiftOffsetY = Random.nextInt(-8, 9).dp
 
-        // 10分おきにスケールを変更 (0.95f 〜 1.05f)
+        // Breathing Scale
         if (currentTime.minute % 10 == 0) {
-            // 0.95 + (0.00 ~ 0.10) -> 0.95 ~ 1.05
             breathingScale = 0.95f + (Random.nextFloat() * 0.10f)
         }
     }
@@ -73,15 +65,20 @@ fun DeskClockScreen(
     // レイアウト制御
     // ------------------------------------------------------------
 
+    // 【修正】 HALF_OPENED を TABLETOP_MODE に変更
+    // Minimalモードは上下分割レイアウトなので、TABLETOP_MODE (水平ヒンジ半開き) の時に反応させます。
+    // ※ BOOK_MODE (垂直ヒンジ) の時は、Minimalモードでは全画面表示 (FLAT扱い) とします。
+    val isTabletop = hingePosture == HingePosture.TABLETOP_MODE
+
     // 半開き状態なら、画面の「上半分(50%)」だけを使う。通常なら「全部(100%)」使う。
     val heightFraction by animateFloatAsState(
-        targetValue = if (hingePosture == HingePosture.HALF_OPENED) 0.5f else 1.0f,
+        targetValue = if (isTabletop) 0.5f else 1.0f,
         animationSpec = tween(durationMillis = 500),
         label = "heightAnimation"
     )
 
     // 半開き時は上寄せ、全開時は中央
-    val contentAlignment = if (hingePosture == HingePosture.HALF_OPENED) {
+    val contentAlignment = if (isTabletop) {
         Alignment.TopCenter
     } else {
         Alignment.Center
@@ -104,9 +101,7 @@ fun DeskClockScreen(
                 time = currentTime,
                 modifier = Modifier
                     .fillMaxSize()
-                    // 【適用】 焼き付き防止：スケールとオフセットを適用
-                    // アニメーションさせずパッと切り替えるのがPixel Shiftの定石です
-                    // （じわじわ動くと逆に全画素をなめることになりかねないため）
+                    // 焼き付き防止適用
                     .scale(breathingScale)
                     .offset(x = shiftOffsetX, y = shiftOffsetY)
             )
