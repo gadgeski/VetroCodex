@@ -1,4 +1,4 @@
-# VETRO: Cyberpunk Foldable Clock
+# VETROCODEX: Cyberpunk Foldable Clock
 
 _"Time is not linear. It folds."_
 
@@ -26,9 +26,9 @@ _"Time is not linear. It folds."_
 
 ## 01. SYSTEM OVERVIEW (概要)
 
-**Vetro** は、razr 60 Ultra などの「縦折りたたみスマートフォン」に特化して設計された、Android ネイティブ時計アプリケーションです。
+**Vetro** は、Galaxy Z Fold 7 などの「横折りたたみスマートフォン」に特化して設計された、Android ネイティブ時計アプリケーションです。
 
-Verified Environment: razr 60 Ultra / Android 15
+Verified Environment: Galaxy Z Fold 7 / Android 16
 
 単なる時刻表示アプリではありません。端末の物理的な形状（開閉状態）を `Jetpack WindowManager` で検知し、UI そのものを物理形状に合わせて変形させる **"Adaptive Cyberpunk Interface"** を搭載しています。
 
@@ -38,14 +38,14 @@ Verified Environment: razr 60 Ultra / Android 15
 
 ### Mode A: "Tabletop" (折りたたみ時)
 
-端末を L 字型に折って机に置くモード。
+端末を 本の様に横に折って机に置くモード。
 
 - **UI:** 画面を上下に分割し、上部に視認性の高い時計、下部にステータスモニターを配置。
 - **Use Case:** デスクワーク中の置時計、ベッドサイドクロック。
 
 ### Mode B: "Monolith" (全開時)
 
-端末を開いた縦長（アスペクト比 22:9）のモード。
+端末を開いた縦長のモード。
 
 - **UI:** フォントを縦方向にスタック（積み上げ）配置。
 - **Design:** 超縦長画面で発生しがちな「余白の崩れ」を防ぎ、画面全体を情報量で埋め尽くすタワー型レイアウト。
@@ -74,4 +74,4 @@ Verified Environment: razr 60 Ultra / Android 15
 - **Real-time Monitor:** `BatteryManager` と `MemoryInfo` から実数値を取得し表示。
 - **Neon Glow Effect:** 標準の Shadow ではなく、Canvas API (`Paint` + `BlurMaskFilter`) を用いて、芯のあるネオン発光を描画。
 
-_Vetro - Time is not linear. It folds._
+_VetroCodex - Time is not linear. It folds._
