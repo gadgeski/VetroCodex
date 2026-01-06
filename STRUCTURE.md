@@ -1,7 +1,8 @@
 ```
-Vetro/
+VetroCodex/
 ├── Readme.md
 ├── STRUCTURE.md
+├── VetroCodex
 ├── app
 │   ├── archive_src
 │   │   └── widget_prototype
@@ -21,7 +22,7 @@ Vetro/
 │       │   └── java
 │       │       └── com
 │       │           └── gadgeski
-│       │               └── vetro
+│       │               └── vetrocodex
 │       │                   └── ExampleInstrumentedTest.kt
 │       ├── main
 │       │   ├── AndroidManifest.xml
@@ -29,9 +30,9 @@ Vetro/
 │       │   ├── java
 │       │   │   └── com
 │       │   │       └── gadgeski
-│       │   │           └── vetro
+│       │   │           └── vetrocodex
 │       │   │               ├── MainActivity.kt
-│       │   │               ├── VetroApp.kt
+│       │   │               ├── VetroCodexApp.kt
 │       │   │               ├── data
 │       │   │               │   ├── ClockMode.kt
 │       │   │               │   └── UserPreferencesRepository.kt
@@ -63,7 +64,6 @@ Vetro/
 │       │       │   ├── bbh_bartle.ttf
 │       │       │   ├── orbitron_bold.ttf
 │       │       │   └── orbitron_medium.ttf
-│       │       ├── mipmap-anydpi
 │       │       ├── mipmap-anydpi-v26
 │       │       │   ├── ic_launcher.xml
 │       │       │   └── ic_launcher_round.xml
@@ -98,9 +98,14 @@ Vetro/
 │           └── java
 │               └── com
 │                   └── gadgeski
-│                       └── vetro
+│                       └── vetrocodex
 │                           └── ExampleUnitTest.kt
 ├── build.gradle.kts
+├── docs
+│   └── img
+│       ├── vetro-cyberpunk_1.png
+│       ├── vetro-cyberpunk_2.png
+│       └── vetro-minimal.png
 ├── gradle
 │   ├── libs.versions.toml
 │   └── wrapper
@@ -112,5 +117,5 @@ Vetro/
 ├── local.properties
 └── settings.gradle.kts
 
-44 directories, 68 files
+46 directories, 71 files
 ```
