@@ -87,14 +87,16 @@ fun DeskClockScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background), // 黒背景
+            .background(MaterialTheme.colorScheme.background),
+        // 黒背景
         contentAlignment = contentAlignment
     ) {
         // 時計表示エリア
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .fillMaxHeight(heightFraction), // 1.0f -> 0.5f
+                .fillMaxHeight(heightFraction),
+        // 1.0f -> 0.5f
             contentAlignment = Alignment.Center
         ) {
             BigTimeDisplay(

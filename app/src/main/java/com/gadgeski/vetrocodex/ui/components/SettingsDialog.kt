@@ -53,7 +53,9 @@ fun SettingsDialog(
 
                 // CYBERPUNK Mode Option
                 ModeOptionRow(
-                    text = "CYBERPUNK (Flip)",
+                    // 【修正】 (Flip) を (Fold) に変更
+                    // アプリの対応端末に合わせて表記を適正化しました
+                    text = "CYBERPUNK (Fold)",
                     isSelected = currentMode == ClockMode.CYBERPUNK,
                     onClick = { onModeSelected(ClockMode.CYBERPUNK) }
                 )
