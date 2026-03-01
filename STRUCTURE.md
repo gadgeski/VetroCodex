@@ -4,17 +4,6 @@ VetroCodex/
 ├── STRUCTURE.md
 ├── VetroCodex
 ├── app
-│   ├── archive_src
-│   │   └── widget_prototype
-│   │       ├── util
-│   │       │   └── WallpaperUtil.kt
-│   │       ├── vetro_widget_info.xml
-│   │       └── widget
-│   │           ├── ChangeWallpaperAction.kt
-│   │           ├── VetroWidget.kt
-│   │           ├── VetroWidgetReceiver.kt
-│   │           ├── VetroWidgetRenderer.kt
-│   │           └── VetroWidgetWorker.kt
 │   ├── build.gradle.kts
 │   ├── proguard-rules.pro
 │   └── src
@@ -36,8 +25,6 @@ VetroCodex/
 │       │   │               ├── data
 │       │   │               │   ├── ClockMode.kt
 │       │   │               │   └── UserPreferencesRepository.kt
-│       │   │               ├── service
-│       │   │               │   └── VetroDreamService.kt
 │       │   │               ├── ui
 │       │   │               │   ├── components
 │       │   │               │   │   ├── BigTimeDisplay.kt
@@ -117,5 +104,5 @@ VetroCodex/
 ├── local.properties
 └── settings.gradle.kts
 
-46 directories, 71 files
+41 directories, 63 files
 ```
